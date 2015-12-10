@@ -6,13 +6,13 @@ class Map_1to1:
 	def __init__(self):
 		self.d = {}
 		self.num_elements = 0
-	
+
 	def add(self, k, v):
 		if ( (k not in self.d) and (v not in self.d) ):
-			self.d{k} = v
-			self.d{v} = k
+			self.d[k] = v
+			self.d[v] = k
 			self.num_elements += 1
-	
+
 	def rem(self, k):
 		if (k in d):
 			d.pop(d.pop(k))
@@ -22,25 +22,25 @@ class Map_NameToInd:
 	def __init__(self):
 		self.d = {}
 		self.num_elements = 0
-	
+
 	def add(self, k):
 		if (k not in self.d):
-			new_ind = self.num_elements
-			self.d{k} = new_ind
-			self.d{new_ind} = k
+			new_ind = self.num_elements + 1
+			self.d[k] = new_ind
+			self.d[new_ind] = k
 			self.num_elements += 1
-		else
-			new_ind = self.d{k}
+		else:
+			new_ind = self.d[k]
 
 		return new_ind
-	
+
 	def rem(self, k):
 		if (k in d):
 			d.pop(d.pop(k))
 			self.num_elements -= 1
 
 	def get(self, k):
-		return self.d{k}
+		return self.d[k]
 
 
 def main():
@@ -65,7 +65,7 @@ def get_full_line(infile):
 			end_of_line_found = True
 
 		full_line = full_line + " " + new_line
-	
+
 	return full_line
 
 
@@ -85,7 +85,7 @@ def parse_verilog(infile):
 		if (element_string == ""):
 			# stop when we hit the end of the file
 			keep_going = False
-		else
+		else:
 			element_arr = element_string.split()
 			tag = element_arr[0]
 
@@ -135,7 +135,7 @@ def parse_verilog(infile):
 					wire_ind = wire_map.get(wire_name)
 
 					# [TODO] Need to add this component to the appropriate nets
-					# [TODO] Need to actuall have lists of components for each net
+					# [TODO] Need to actually have lists of components for each net
 
 
-			
+
