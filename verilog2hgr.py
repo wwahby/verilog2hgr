@@ -52,7 +52,7 @@ def main():
 
 	infile_name = args.infile
 	infile_name_arr = infile_name.split(".")
-	if len(infile_name_arr > 1):
+	if len(infile_name_arr) > 1:
 		infile_base_name = ".".join(infile_name_arr[0:-1])
 	else:
 		infile_base_name = infile_name_arr[0]
@@ -73,15 +73,16 @@ def get_full_line(infile):
 		new_line = infile.readline()
 		new_line = new_line.strip()
 
-		if (new_line[-1] == ";"):
-			end_of_line_found = True
+		if len(new_line) > 0:
+			if (new_line[-1] == ";"):
+				end_of_line_found = True
 
 		full_line = full_line + " " + new_line
 
 	return full_line
 
 
-def parse_verilog(infile):
+def parse_verilog(infile_name):
 
 	keep_going = True
 	wire_map = Map_NameToInd()
@@ -93,6 +94,8 @@ def parse_verilog(infile):
 	wire_tag_list = ["input", "output", "inout", "wire"]
 	ignore_tag_list = ["module", "endmodule", "//"]
 	punctuation_list = [",", ";"]
+
+	infile = open(infile_name, 'r')
 
 	while(keep_going):
 		element_string = get_full_line(infile)
@@ -157,6 +160,10 @@ def parse_verilog(infile):
 
 					# Break into an array. First element will be IO name, second will be connected wire name
 					new_element_arr = new_element.split()
+					print(new_element)
+					print("\n")
+					print(new_element_arr)
+					print("\n\n")
 					wire_name = new_element_arr[1]
 
 					# Indicate that this component is connected to this wire
@@ -189,4 +196,6 @@ def write_component_map(component_map, outfile_name):
 
 
 
+if ( __name__ == "__main__"):
+	main()
 
