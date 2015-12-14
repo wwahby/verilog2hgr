@@ -69,7 +69,9 @@ def main():
 	nhgrfile_name = infile_base_name + ".nhgr"
 	mapfile_name = infile_base_name + ".map"
 
-	(wire_connection_list, component_map, component_type_dict) = parse_verilog(infile_name)
+	(orig_wire_connection_list, orig_component_map, component_type_dict) = parse_verilog(infile_name)
+	(wire_connection_list, component_map) = remove_empty_nets_and_unused_components(orig_wire_connection_list, orig_component_map)
+	#(wire_connection_list, component_map, component_type_dict) = parse_verilog(infile_name)
 	write_hgr(wire_connection_list, component_map, hgrfile_name)
 	write_hgr_with_names(wire_connection_list, component_map, nhgrfile_name)
 	write_component_map(component_map, mapfile_name)
@@ -298,9 +300,11 @@ def parse_verilog(infile_name):
 
 	return (wire_connection_list, component_map, component_type_dict)
 
+
 def remove_empty_nets_and_unused_components(wire_connection_list, component_map):
 	num_nets = len(wire_connection_list)
 	num_components = component_map.num_elements
+
 
 	# Create lists of zeros to track length of each net and number of times each component is used
 	component_use_list = [0] * num_components
@@ -320,11 +324,32 @@ def remove_empty_nets_and_unused_components(wire_connection_list, component_map)
 	new_wire_connection_list = []
 
 	for component_ind in range(num_components):
-		if component_use_list[component_ind] > 0: # if this component appears in at least one net WITH AT LEAST ONE OTHER THING CONNECTED TO IT then it is a real component
+		if component_use_list[component_ind] > 0: # if this component appears in at least one net at least one other thing connected to it then it is a real component
 			component_name = component_map.get(component_ind)
 			new_component_map.add(component_name)
-			# [TODO] still need to figure out how to change the indices in the wire connection list.
 
+	# Process all old nets, convert component IDs for valid components, and only add the new nets to the final net list if they have more than one real component
+	# This step is a bit roundabout since we're storing indices instead of names
+	# We first need to check that the net is long enough
+	# Then that each component is real
+	# Then we have to find the component ID for each real component
+	# Then we have to ultimately decide whether the new net is actually long enough
+	for net_ind in range(num_nets):
+		net_length = net_length_list[net_ind]
+		net = wire_connection_list[net_ind]
+		num_real_components = 0
+		new_net = []
+		for component_ind in net:
+			if component_use_list[component_ind] > 0:
+				num_real_components += 1
+				component_name = component_map.get(component_ind)
+				new_component_ind = new_component_map.get(component_name)
+				new_net.append(new_component_ind)
+
+		if len(new_net) > 1:
+			new_wire_connection_list.append(new_net)
+
+	return (new_wire_connection_list, new_component_map)
 
 
 
