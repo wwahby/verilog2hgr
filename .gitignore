@@ -226,3 +226,11 @@ pip-log.txt
 *.asv
 *.mat
 
+#############
+## Netlists
+#############
+*.hgr
+*.nhgr
+*.map
+*.v
+
